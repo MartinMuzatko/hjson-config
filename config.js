@@ -1,7 +1,6 @@
 const promisify = require('promisify-node');
 const fs = promisify('fs');
 const hjson = require('hjson');
-const log = require('logger');
 const deep = require('deep-get-set');
 const extend = require('extend');
 
@@ -30,14 +29,12 @@ module.exports = class Config
      */
     async get(freshcopy = false) {
         if (this.cache && !freshcopy) {
-            log.verbose(`config ${this.path} loaded from cache`, { topic: 'Config' });
             return this.cache;
         }
 
         // Only retrieve a new config, when there is nothing cached or freshcopy force flag is set
         const file = await fs.readFile(this.path);
         this.cache = hjson.rt.parse(file.toString());
-        log.verbose(`Config ${this.path} loaded`, { topic: 'Config' });
         return this.cache;
     }
 
