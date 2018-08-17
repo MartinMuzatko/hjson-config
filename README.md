@@ -1,22 +1,51 @@
 # hjson-config
 A file read/write/watch/setProperty wrapper around hjson.
 
-Uses promises.
+Uses promises. Persists comments
 
-![](https://img.shields.io/bundlephobia/min/hjson-config.svg)
+![](https://img.shields.io/bundlephobia/min/hjson-config.svg?style=for-the-badge)
+![](https://img.shields.io/npm/dt/hjson-config.svg?style=for-the-badge)
 
-## API
+## Install
 
-### Construct
+``` bash
+npm install hjson-config
+```
+
+## Usage
+
+### constructor
+
 ```js
 const Config = require('hjson-config')
 
-const config = new Config('./my-file.hjson')
+const serverConfig = new Config('./serverconfig.hjson')
 ```
 
-### Get
+### get
 
 ```js
+let servers = await serverConfig.get()
+```
 
-await config.get
+### set
+
+```js
+servers.ip = '192.168.0.1'
+await serverConfig.set(servers)
+```
+
+### setProperty
+
+```js
+await serverConfig.setProperty('.ip', '192.168.0.1)
+```
+
+
+### watch
+
+```js
+serverConfig.watch(newConfig => {
+    
+})
 ```
