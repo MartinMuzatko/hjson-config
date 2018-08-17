@@ -1,6 +1,6 @@
 {
   "name": "hjson-config",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A file read/write/watch/setProperty wrapper around hjson",
   "main": "config.js",
   "scripts": {
