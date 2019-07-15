@@ -25,7 +25,10 @@ async function retry(callback = () => {}, retries = 3, delay = 0, error) {
     } catch (error) {
         console.warn(`${error} - Retrying - ${retries} tr${retries == 1 ? 'y' : 'ies'} left. ${delay && (' Next in ' + delay + 'ms')}`)
         delay && await sleep(typeof delay == 'function' ? delay(retries, error) : delay)
-        return retry(callback, retries - 1, delay, error )
+        if (typeof retries === number) {
+            retries--;
+        }
+        return retry(callback, retries, delay, error )
     }
 }
 
