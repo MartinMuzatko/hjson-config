@@ -58,7 +58,7 @@ module.exports = class Config
         }
 
         // Only retrieve a new config, when there is nothing cached or freshcopy force flag is set
-        const file = await retry(fs.readFile(this.path), retries, delay);
+        const file = await retry(() => fs.readFile(this.path), retries, delay);
         this.cache = hjson.rt.parse(file.toString());
         return this.cache;
     }
