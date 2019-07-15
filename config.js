@@ -11,6 +11,31 @@ const CONFIGWRITEOPTIONS = {
 };
 
 /**
+ * Retry given callback for amount of retries
+ * 
+ * @param {function} [callback=() => {}]
+ * @param {number} [retries=3]
+ * @returns
+ */
+async function retry(callback = () => {}, retries = 3, delay = 0, error) {
+    if (retries < 0) throw new Error(error || 'Failed retrying')
+    try {
+        const result = await callback()
+        return result
+    } catch (error) {
+        console.warn(`${error} - Retrying - ${retries} tr${retries == 1 ? 'y' : 'ies'} left. ${delay && (' Next in ' + delay + 'ms')}`)
+        delay && await sleep(typeof delay == 'function' ? delay(retries, error) : delay)
+        return retry(callback, retries - 1, delay, error )
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+
+
+/**
  * Module used to read, write and validate hjson configs
  * Usage: new Config('./path-to-file.hjson')
  */
@@ -27,13 +52,13 @@ module.exports = class Config
      * @param {boolean} [freshcopy=false]
      * @returns {}
      */
-    async get(freshcopy = false) {
+    async get(freshcopy = false, {retries=3, delay=1000}) {
         if (this.cache && !freshcopy) {
             return this.cache;
         }
 
         // Only retrieve a new config, when there is nothing cached or freshcopy force flag is set
-        const file = await fs.readFile(this.path);
+        const file = await retry(fs.readFile(this.path), retries, delay);
         this.cache = hjson.rt.parse(file.toString());
         return this.cache;
     }
