@@ -102,21 +102,20 @@ module.exports = class Config
      * By using extend, we are merging the new config on top of the old config.
      * No properties will be lost, but new ones added and equal ones overwritten
      *
-     * @param {Config} newConfig
+     * @param {Config|Object} newConfig
      * @param {boolean} [mergeOldOnTop=false]
      * @returns true|false
      */
     async merge(newConfig, mergeOldOnTop = false) {
-        if (!newConfig instanceof Config) {
-            return false;
-        }
+        let mergeAsPlainObject = false
+        if (!(newConfig instanceof Config)) mergeAsPlainObject = true
         const [oldConfigJson, newConfigJson] = await Promise.all(
             [
                 this.get(true),
-                newConfig.get(true)
+                mergeAsPlainObject ? newConfig : newConfig.get(true)
             ]
         );
-        let mergeOrder = mergeOldOnTop ?
+        const mergeOrder = mergeOldOnTop ?
             [newConfigJson, oldConfigJson] :
             [oldConfigJson, newConfigJson];
         await this.set(extend(true, ...mergeOrder));
